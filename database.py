@@ -1,10 +1,11 @@
 #!/usr/bin/python
 import MySQLdb
+import DatabasConfig as DB
 
-db = MySQLdb.connect(host="localhost",    # your host, usually localhost
-                     user="root",         # your username
-                     passwd="blackhole",  # your password
-                     db="Black_Hole_Data")        # name of the database
+db = MySQLdb.connect(host       = "localhost",            # your host, usually localhost
+                     user       = "root",                 # your username 
+                     passwd     = "dantes",             # your password
+                     db         = "Black_Hole_Data")        # name of the database
 
 # you must create a Cursor object. It will let
 #  you execute all the queries you need
@@ -14,7 +15,7 @@ cur = db.cursor()
 
 def send_query_to_db(Query, ID):
 	try:
-		query1 = 'INSERT IGNORE INTO Black_Hole_Accretion_Disk (Uid) VALUES (%s)' % ID
+		query1 = 'INSERT IGNORE INTO Orbits (Uid) VALUES (%s)' % ID
 		#
 		cur.execute(query1)
 		# Use all the SQL you like
@@ -30,33 +31,12 @@ def send_query_to_db(Query, ID):
 		db.rollback()
 	# print all the first cell of all the rows
 
-propertyFields = [    'BHiord'           ,\
-					  'Gasiord'          ,\
-					  'Time'             ,\
-					  'Initial_Gas_Mass' ,\
-					  'Initial_BH_Mass'  ,\
-					  'Final_Gas_Mass'   ,\
-					  'Final_BH_Mass'    ,\
-					  'Gasmass'          ,\
-					  'dMacc'            ,\
-					  'DMask'            ,\
-					  'dx'               ,\
-					  'dy'               ,\
-					  'dz'               ,\
-					  'dvx'              ,\
-					  'dvy'              ,\
-					  'dvz'              ,\
-					  'u'                ,\
-					  'bhsoft'           ,\
-					  'tcooloff'         ,\
-					  'afac'             ,\
-					  'rho'              ,\
-					  'temp'             ,\
-					  'metals'           ,\
-					  'h2frac'           ,\
-					  'tcool']
+propertyFields = DB.get_all_fields()
+print propertyFields
+
+
 num_lines = 0
-dataFile = 'shortversion.BHAccLog'
+dataFile = 'OrbitMediumLog'
 Uid = 1
 
 
@@ -70,7 +50,7 @@ with open(dataFile, 'r') as f:
         query = ''
         set_statements = []
         final_set_statements = ''
-        query_update_statement = "UPDATE IGNORE Black_Hole_Accretion_Disk \nSET %s \nWHERE  Uid = %s"
+        query_update_statement = "UPDATE IGNORE Orbits \nSET %s \nWHERE  Uid = %s"
     	
     	i = 0
     	for data in data_in_file:

@@ -5,6 +5,14 @@
 '''
 
 create a window to show the plots
+adding formulas to determine the accretion  
+
+dm/dt
+
+dm: given
+
+i = 1
+dt = [time[i] - time[i-1]]
 
 '''
 #!/usr/bin python
@@ -14,6 +22,7 @@ from ttk import Frame, Style
 import DatabasConfig as DB
 import plot_creation as plotting
 import numpy as np
+from random import randrange
 
 import matplotlib
 matplotlib.use('TkAgg')
@@ -21,6 +30,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 from matplotlib.figure import Figure
 from matplotlib import mlab, cm
 from matplotlib.mlab import griddata
+import testPlot as ts
 
 user_table_selection = ''
 def get_table_selection():
@@ -166,51 +176,43 @@ class Mathplotlib(Frame):
 
 		for ids in BH_IDs:
 			self.listbox.insert(END, ids['BHiord'])
-
+		# selected the first entry by default	
+		self.listbox.select_set(0)
+		# setting the size of the frame 
 		self.controller.minsize(width=750, height=600)
         # Label(dialog_frame, text='host:'    ).grid(row=0, column=0, sticky='w')
-		self.x_axis_selection = StringVar()
-		self.y_axis_selection = StringVar()
 		array                 = DB.get_all_fields()
 		self.drop_menu_x_axis(array)
 		self.drop_menu_y_axis(array)
+		self.drop_menu_plot_type()
 		self.selectButton()
 		self.cancelButton()
 
+	def selected_plot(self):
+		selected_option =  self.plot_selection.get()
+		if (selected_option == "contour"):
+			self.contour_plot()
+		elif (selected_option == "line"):
+			self.line_plot()
+		else:
+			print "Error"
 
-	def refresh_Plots(self):
+	def line_plot(self):
 		x_axis  = self.x_axis_selection.get()
 		y_axis  = self.y_axis_selection.get()
 		user_bh_id_selection = self.get_bh_id_selection()
 
 		rows = DB.get_axis_by_id(user_bh_id_selection, x_axis, y_axis)
+	
+		x = []
+		y = []
 
-		# self.subplot.contourf(x,y,a, np.linspace(-1,1,11))
+		plotting.format_axis(rows, x , y)
 
-		delta = 0.025
-		x = np.arange(-3.0, 3.0, delta)
-		y = np.arange(-2.0, 2.0, delta)
-		X, Y = np.meshgrid(x, y)
-		Z1 = mlab.bivariate_normal(X, Y, 1.0, 1.0, 0.0, 0.0)
-		Z2 = mlab.bivariate_normal(X, Y, 1.5, 0.5, 1, 1)
-		# difference of Gaussians
-		Z = 10.0 * (Z2 - Z1)
-		ax = self.canvas.figure.axes[0]
+		for i in range(10):
+			print rows[i] , x[i], y[i]
 
-		CS = ax.contour(X, Y, Z)
-
-		xvalues = plotting.format_axis(rows ,x_axis)
-		yvalues = plotting.format_axis(rows ,y_axis)
-
-		manual_locations = zip(xvalues, yvalues)
-		# manual_locations = [(-1, -1.4), (-0.62, -0.7), (-2, 0.5), (1.7, 1.2), (2.0, 1.4), (2.4, 1.7)]
-		self.subplot.clabel(CS, inline=1, fontsize=10, manual=manual_locations)
-
-		'''
-		x = plotting.format_axis(rows ,x_axis)
-		y = plotting.format_axis(rows ,y_axis)
-
-		# self.line.set_data(x, y)
+		self.line.set_data(x, y)
 
 		ax = self.canvas.figure.axes[0]
 
@@ -222,14 +224,16 @@ class Mathplotlib(Frame):
 
 		# ax.set_xscale("log")
 		# ax.set_yscale("log")
-		ax.contour(x,y,a)
-		'''     
 		self.canvas.draw()
+
+	def contour_plot(self):
+		ts.test2()
+		ts.test()
 
 	def show_plot(self):
 		f            = Figure(figsize=(5,5), dpi =100)
 		self.subplot = f.add_subplot(111)
-		# self.line,   = subplot.plot([0],[0], linewidth=2)
+		self.line,   = self.subplot.plot([0],[0], linewidth=2)
 		self.canvas  = FigureCanvasTkAgg(f, self)
 		self.canvas.show()
 		self.canvas.get_tk_widget().grid(column=0, row=0, sticky="nsew")
@@ -242,22 +246,34 @@ class Mathplotlib(Frame):
 		return value
 	### x axis menu
 	def drop_menu_x_axis(self, optionList):
+		self.x_axis_selection = StringVar()
+		self.x_axis_selection.set(optionList[0])
 		drop_Menu_x = OptionMenu(self.dialog_frame, self.x_axis_selection, *optionList)
 		drop_Menu_x.grid(column=1, row=3, sticky="news", columnspan = 2)
 		label       = Label(self.dialog_frame, text='x axis' ).grid(column=1, row=2, sticky="new",  columnspan = 2)
 	### y axis menu
 	def drop_menu_y_axis(self, optionList):
+		self.y_axis_selection = StringVar()
+		self.y_axis_selection.set(optionList[1])
 		drop_Menu_y = OptionMenu(self.dialog_frame, self.y_axis_selection, *optionList)
 		drop_Menu_y.grid(column=1, row=5, sticky="news", columnspan = 2)
 		label       = Label(self.dialog_frame, text='y axis' ).grid(column=1, row=4, sticky="new", columnspan = 2)
+	### plotting type 	
+	def drop_menu_plot_type(self):
+		self.plot_selection   = StringVar()
+		self.plot_selection.set('line')
+		optionList  = ['contour','line']
+		drop_Menu_x = OptionMenu(self.dialog_frame, self.plot_selection, *optionList)
+		drop_Menu_x.grid(column=1, row=7, sticky="news", columnspan = 2)
+		label       = Label(self.dialog_frame, text='Plot Type' ).grid(column=1, row=6, sticky="new",  columnspan = 2)
 	### Select button
 	def selectButton(self):
-		button    = Button(self.dialog_frame, text="Select", anchor=W, padx=15, command=self.refresh_Plots)
-		button.grid(column=1, row=6, sticky="nsew", pady=30)
+		button    = Button(self.dialog_frame, text="Select", anchor=W, padx=15, command=self.selected_plot)
+		button.grid(column=1, row=8, sticky="nsew", pady=30)
 	### Cancel button
 	def cancelButton(self):
 		quitButton = Button(self.dialog_frame, text='Cancel',  anchor=W, padx=10, command= lambda: self.controller.click_cancel())
-		quitButton.grid(column=2, row=6, sticky="nsew", pady=30)
+		quitButton.grid(column=2, row=8, sticky="nsew", pady=30)
 
 # Allow the class to run stand-alone.
 if __name__ == "__main__":
