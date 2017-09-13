@@ -1,10 +1,19 @@
 #!/usr/bin/python
 import MySQLdb
+<<<<<<< HEAD
 
 db = MySQLdb.connect(host="localhost",    # your host, usually localhost
                      user="root",         # your username
                      passwd="dantes",  # your password
                      db="Black_Hole_Data")        # name of the database
+=======
+import DatabasConfig as DB
+
+db = MySQLdb.connect(host       = "localhost",            # your host, usually localhost
+                     user       = "root",                 # your username 
+                     passwd     = "dantes",             # your password
+                     db         = "Black_Hole_Data")        # name of the database
+>>>>>>> 638fab862459a35bf12541ccbd5f224f03bac923
 
 # you must create a Cursor object. It will let
 #  you execute all the queries you need
@@ -14,7 +23,11 @@ cur = db.cursor()
 
 def send_query_to_db(Query, ID):
 	try:
+<<<<<<< HEAD
 		query1 = 'INSERT IGNORE INTO Black_Hole_Accretion_Disk (Uid) VALUES (%s)' % ID
+=======
+		query1 = 'INSERT IGNORE INTO Orbits (Uid) VALUES (%s)' % ID
+>>>>>>> 638fab862459a35bf12541ccbd5f224f03bac923
 		#
 		cur.execute(query1)
 		# Use all the SQL you like
@@ -30,6 +43,7 @@ def send_query_to_db(Query, ID):
 		db.rollback()
 	# print all the first cell of all the rows
 
+<<<<<<< HEAD
 propertyFields = [    'BHiord'           ,\
 					  'Gasiord'          ,\
 					  'Time'             ,\
@@ -57,6 +71,14 @@ propertyFields = [    'BHiord'           ,\
 					  'tcool']
 num_lines = 0
 dataFile = 'mediumfile.log'
+=======
+propertyFields = DB.get_all_fields()
+print propertyFields
+
+
+num_lines = 0
+dataFile = 'OrbitMediumLog'
+>>>>>>> 638fab862459a35bf12541ccbd5f224f03bac923
 Uid = 1
 
 
@@ -70,7 +92,11 @@ with open(dataFile, 'r') as f:
         query = ''
         set_statements = []
         final_set_statements = ''
+<<<<<<< HEAD
         query_update_statement = "UPDATE IGNORE Black_Hole_Accretion_Disk \nSET %s \nWHERE  Uid = %s"
+=======
+        query_update_statement = "UPDATE IGNORE Orbits \nSET %s \nWHERE  Uid = %s"
+>>>>>>> 638fab862459a35bf12541ccbd5f224f03bac923
     	
     	i = 0
     	for data in data_in_file:

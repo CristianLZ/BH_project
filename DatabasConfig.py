@@ -38,11 +38,19 @@ def get_axis_by_id(BHiord, field_x_axis, field_y_axis):
 	return rows
 
 def get_all_fields():
+<<<<<<< HEAD
 	cur.execute("""SELECT column_name from information_schema.columns where table_name='Black_Hole_Accretion_Disk'""")
 	all_rows = cur.fetchall()
 	x = []
 	for item in all_rows:
 		if ((item[0] != "uid") and (item[0] != "BHiord")):
+=======
+	cur.execute("""SELECT column_name from information_schema.columns where table_name='Orbits'""")
+	all_rows = cur.fetchall()
+	x = []
+	for item in all_rows:
+		# if ((item[0] != "uid") and (item[0] != "BHiord")):
+>>>>>>> 638fab862459a35bf12541ccbd5f224f03bac923
 			x.extend(item)
 
 	return x

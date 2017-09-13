@@ -22,7 +22,11 @@ from ttk import Frame, Style
 import DatabasConfig as DB
 import plot_creation as plotting
 import numpy as np
+<<<<<<< HEAD
 from scipy.stats import gaussian_kde
+=======
+from random import randrange
+>>>>>>> 638fab862459a35bf12541ccbd5f224f03bac923
 
 import matplotlib
 matplotlib.use('TkAgg')
@@ -32,6 +36,16 @@ from matplotlib import mlab, cm
 from matplotlib.mlab import griddata
 import testPlot as ts
 
+<<<<<<< HEAD
+=======
+user_table_selection = ''
+def get_table_selection():
+	return user_table_selection
+
+def set_table_selection(selection):
+	user_table_selection = selection
+
+>>>>>>> 638fab862459a35bf12541ccbd5f224f03bac923
 class BaseBHFrame(Tk):
 	''' controller for managiging frames '''
 	def __init__(self, *args, **kwargs):
@@ -43,7 +57,11 @@ class BaseBHFrame(Tk):
 
 		self.frames = {}
 
+<<<<<<< HEAD
 		for F in (DB_acess, ListBoxChoice_Tables, Mathplotlib):
+=======
+		for F in (MainFrame, DB_acess, ListBoxChoice_Tables, Mathplotlib):
+>>>>>>> 638fab862459a35bf12541ccbd5f224f03bac923
 			frame = F(container, self)
 			self.frames[F] = frame
 			
@@ -107,6 +125,18 @@ class DB_acess(Frame):
 		# self.pack()
 		self.createWidgets(parent, controller)
 
+<<<<<<< HEAD
+=======
+class MainFrame(Frame):
+	def __init__(self, parent, controller):
+		Frame.__init__(self, parent)
+		label = Label(self, text=" Start Page ")
+		label.pack(pady = 10, padx=10)
+
+		buttonTest = Button(self, text = " Test",command= lambda: controller.show_frame(DB_acess))
+		buttonTest.pack()
+
+>>>>>>> 638fab862459a35bf12541ccbd5f224f03bac923
 class ListBoxChoice_Tables(Frame):
     def __init__(self, parent, controller):
     	Frame.__init__(self, parent)
@@ -130,7 +160,11 @@ class ListBoxChoice_Tables(Frame):
     def select_table(self, parent):
         value = str(self.listbox.get(self.listbox.curselection()))
         set_table_selection(value)
+<<<<<<< HEAD
         parent.show_frame(Mathplotlib)
+=======
+        parent.show_frame(ListBoxChoice_BH_ID)
+>>>>>>> 638fab862459a35bf12541ccbd5f224f03bac923
 
 # improvements
 ##########
@@ -147,6 +181,7 @@ class Mathplotlib(Frame):
 		Frame.__init__(self, parent)
 		self.parent = parent
 		self.controller = controller
+<<<<<<< HEAD
 		self.bind("<<ShowFrame>>", self.on_show_frame)
 
 	def on_show_frame(self, event):
@@ -180,10 +215,24 @@ class Mathplotlib(Frame):
 		self.listbox = Listbox(self.dialog_frame, selectmode="Extended")
 		self.listbox.grid(column=1, row=1, columnspan = 2)
 		BH_IDs       = DB.get_BH_list_ID()
+=======
+		self.show_plot()
+		self.bind("<<ShowFrame>>", self.on_show_frame)
+
+	def on_show_frame(self, event):
+		self.dialog_frame = Frame(self)
+		self.dialog_frame.grid(column=1, row=0, columnspan = 2, sticky="nsew")
+		label        = Label(self.dialog_frame, text='Unique BH IDs:'    ).grid(column=1, row=0, sticky="nsew", columnspan=2)
+		self.listbox = Listbox(self.dialog_frame, selectmode="Extended")
+		self.listbox.grid(column=1, row=1, columnspan = 2)
+		BH_IDs       = DB.get_BH_list_ID()
+
+>>>>>>> 638fab862459a35bf12541ccbd5f224f03bac923
 		for ids in BH_IDs:
 			self.listbox.insert(END, ids['BHiord'])
 		# selected the first entry by default	
 		self.listbox.select_set(0)
+<<<<<<< HEAD
 	
 	### x axis menu
 	def drop_menu_x_axis(self, optionList):
@@ -201,11 +250,32 @@ class Mathplotlib(Frame):
 				   'line'   : self.line_plot}
 		# executing the selected plot 
 		options[selected_option]()
+=======
+		# setting the size of the frame 
+		self.controller.minsize(width=750, height=600)
+        # Label(dialog_frame, text='host:'    ).grid(row=0, column=0, sticky='w')
+		array                 = DB.get_all_fields()
+		self.drop_menu_x_axis(array)
+		self.drop_menu_y_axis(array)
+		self.drop_menu_plot_type()
+		self.selectButton()
+		self.cancelButton()
+
+	def selected_plot(self):
+		selected_option =  self.plot_selection.get()
+		if (selected_option == "contour"):
+			self.contour_plot()
+		elif (selected_option == "line"):
+			self.line_plot()
+		else:
+			print "Error"
+>>>>>>> 638fab862459a35bf12541ccbd5f224f03bac923
 
 	def line_plot(self):
 		x_axis  = self.x_axis_selection.get()
 		y_axis  = self.y_axis_selection.get()
 		user_bh_id_selection = self.get_bh_id_selection()
+<<<<<<< HEAD
 		rows = DB.get_axis_by_id(user_bh_id_selection, x_axis, y_axis)
 
 		x = []; y = []
@@ -213,6 +283,23 @@ class Mathplotlib(Frame):
 		plotting.format_axis(rows, x , y)
 		self.line.set_data(x, y)
 		ax = self.canvas.figure.axes[0]
+=======
+
+		rows = DB.get_axis_by_id(user_bh_id_selection, x_axis, y_axis)
+	
+		x = []
+		y = []
+
+		plotting.format_axis(rows, x , y)
+
+		for i in range(10):
+			print rows[i] , x[i], y[i]
+
+		self.line.set_data(x, y)
+
+		ax = self.canvas.figure.axes[0]
+
+>>>>>>> 638fab862459a35bf12541ccbd5f224f03bac923
 		ax.set_title('Black Hole ID: ' + user_bh_id_selection + ' ')
 		ax.set_xlabel(x_axis)
 		ax.set_ylabel(y_axis)
@@ -224,6 +311,7 @@ class Mathplotlib(Frame):
 		self.canvas.draw()
 
 	def contour_plot(self):
+<<<<<<< HEAD
 		'''
 		data = np.clip(randn(250, 250), -1, 1)
 		cax = self.subplot.imshow(data, interpolation='nearest', cmap=cm.afmhot)
@@ -236,6 +324,32 @@ class Mathplotlib(Frame):
 	def get_bh_id_selection(self):
 		value             = str(self.listbox.get(self.listbox.curselection()))
 		return value
+=======
+		ts.test2()
+		ts.test()
+
+	def show_plot(self):
+		f            = Figure(figsize=(5,5), dpi =100)
+		self.subplot = f.add_subplot(111)
+		self.line,   = self.subplot.plot([0],[0], linewidth=2)
+		self.canvas  = FigureCanvasTkAgg(f, self)
+		self.canvas.show()
+		self.canvas.get_tk_widget().grid(column=0, row=0, sticky="nsew")
+		self.canvas._tkcanvas.grid(column=0, row=0, rowspan=2, sticky="nsew")
+		toolbar = NavigationToolbar2TkAgg(self.canvas, self.controller)
+		toolbar.update()
+
+	def get_bh_id_selection(self):
+		value             = str(self.listbox.get(self.listbox.curselection()))
+		return value
+	### x axis menu
+	def drop_menu_x_axis(self, optionList):
+		self.x_axis_selection = StringVar()
+		self.x_axis_selection.set(optionList[0])
+		drop_Menu_x = OptionMenu(self.dialog_frame, self.x_axis_selection, *optionList)
+		drop_Menu_x.grid(column=1, row=3, sticky="news", columnspan = 2)
+		label       = Label(self.dialog_frame, text='x axis' ).grid(column=1, row=2, sticky="new",  columnspan = 2)
+>>>>>>> 638fab862459a35bf12541ccbd5f224f03bac923
 	### y axis menu
 	def drop_menu_y_axis(self, optionList):
 		self.y_axis_selection = StringVar()
